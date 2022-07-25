@@ -119,3 +119,17 @@ RUN curl -sS https://dl.google.com/android/repository/${SDK_VERSION} -o /tmp/sdk
     && rm -rf ${ANDROID_HOME}/.android \
     && chmod 777 -R /opt/android \
     && ln -s ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/9.0.9 ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/9.0.8
+
+
+ENV APP_HOME /home/ignite
+RUN mkdir -p $APP_HOME
+
+WORKDIR $APP_HOME
+RUN npm i -g --unsafe-perm ignite-cli expo-cli
+RUN npx ignite-cli new App --expo
+
+WORKDIR ${APP_HOME}/App
+# RUN expo doctor --fix-dependencies
+# RUN npx @react-native-community/cli doctor
+
+CMD yarn web
