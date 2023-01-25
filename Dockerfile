@@ -107,19 +107,27 @@ RUN curl -sS https://dl.google.com/android/repository/${SDK_VERSION} -o /tmp/sdk
     && mkdir -p ${ANDROID_HOME}/cmdline-tools \
     && unzip -q -d ${ANDROID_HOME}/cmdline-tools /tmp/sdk.zip \
     && mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest \
-    && rm /tmp/sdk.zip \
-    && yes | sdkmanager --licenses \
-    && yes | sdkmanager "platform-tools" \
+    && rm /tmp/sdk.zip
+
+RUN yes | sdkmanager --licenses
+
+RUN yes | sdkmanager "platform-tools" \
+        "platforms;android-$ANDROID_BUILD_VERSION" \
+        "build-tools;$ANDROID_TOOLS_VERSION" \
+        "system-images;android-21;google_apis;armeabi-v7a"
+
+RUN yes | sdkmanager "emulator" \
+        "cmake;$CMAKE_VERSION"
+
+RUN yes | sdkmanager "platform-tools" \
         "emulator" \
         "platforms;android-$ANDROID_BUILD_VERSION" \
         "build-tools;$ANDROID_TOOLS_VERSION" \
         "cmake;$CMAKE_VERSION" \
-        "system-images;android-21;google_apis;armeabi-v7a" \
         "ndk;$NDK_VERSION" \
     && rm -rf ${ANDROID_HOME}/.android \
     && chmod 777 -R /opt/android \
     && ln -s ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/9.0.9 ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/9.0.8
-
 
 ENV APP_HOME /home/ignite
 RUN mkdir -p $APP_HOME
